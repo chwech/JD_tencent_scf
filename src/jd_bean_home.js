@@ -70,6 +70,9 @@ const JD_API_HOST = 'https://api.m.jd.com/';
         }
         continue
       }
+      
+      await jdBean();
+      await $.wait(1000)
       await jdBeanHome();
     }
   }
@@ -123,6 +126,51 @@ const JD_API_HOST = 'https://api.m.jd.com/';
   .finally(() => {
     $.done();
   })
+
+
+// 无线端领豆
+function jdBean() {
+  // body
+  //   appid	signed_wh5_ihub
+  // client	android
+  // clientVersion	11.4.0
+  // networkType	wifi
+  // openudid	7303164613569363-5653736683431346
+  // osVersion	12
+  // screen	360*800
+  // uuid	7303164613569363-5653736683431346
+  // eu	7303164613569363
+  // fv	5653736683431346
+  // d_model	RMX2202
+  // body	{}
+  // functionId	signBeanAct
+  // x-api-eid-token	jdd035UX3SJAUQNYW556CZGUPBX5XQDQNN4BZBOV66N5TW2J3CE4OLHBRVJOPR7RT6VE3HGF63S3MSUYN2ANYV7TTJ66E3MAAAAMLVHA2O2AAAAAACUZOQHXQKC52D4X
+  // t	1699434178671
+  // h5st	20231108170258687;8779979355638427;9d49c;tk02wb7e71c7d41lMisyKzJ4M3gy4HhBuJxWTlg9xR3HAPPvNg4weuXsMZT8buEi9EAZR4KdN3_GugGpKMmsRTm3u9yT;43b14ca547722c0c212a0cb4a8d1b50f4734dc53fe864cffe8350c9a7194d643;3.1;1699434178687;62f4d401ae05799f14989d31956d3c5f71f5c2699ed7b8d3b6487c6792485bbfe0756faf660c5a9683ded1ac1b82a1d4db57d71f1224bd26918f52cc41986f2b7aaae97077a940b3f9f0c13500b0a03c9196654336fa6d3d6b95a622bfe3a9cffebe1fc8c9b660caa87cec73cef6f0c7bd18749556773e0dc46208828427d973002e72fa4cb3b8684dc590329b08ca25d7d4a1588bc34eac48ff2cfd49a3ae8f36883ea3d9c6dc840676bc9cda5adca65f1a5f17b7d6e101bd56f0db503e57253681423de09c62063f7fe493bcbcfaed30f75f89c7e0b1d6d5a5bc6fd19bd89239af8d333ed8a2ffbeb7bd5d973725cdcf59e92bdf07b6d4b87cc968a93e46b6eb26326352c938fdafe4059e8ec32bca0bc44984c8b65c001b8d44269b8820f3
+
+  return new Promise((resolve, reject) => {
+    $.post(taskBeanUrl('signBeanAct'), (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`${$.name} signBeanAct API请求失败，请检查网路重试`)
+          reject(err)
+        } else {
+          if (safeGet(data)) {
+            data = JSON.parse(data);
+            console.log('无线端签到领京豆', data)
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp)
+        reject(e)
+      } finally {
+        resolve(data);
+      }
+    })
+  })
+}
+
 
 async function jdBeanHome() {
   try {
